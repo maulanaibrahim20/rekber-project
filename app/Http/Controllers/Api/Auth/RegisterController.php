@@ -28,8 +28,18 @@ class RegisterController extends Controller
             [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|min:5|max:255|unique:users',
-                'username' => 'required|string|max:255|unique:users',
+                'username' => [
+                    'required',
+                    'string',
+                    'min:3',
+                    'max:30',
+                    'unique:users,username',
+                    'regex:/^(?!.*\.\.)(?!.*\.$)(?!^\.)[a-zA-Z0-9._]+$/',
+                ],
                 'password' => 'required|string|min:8|confirmed',
+            ],
+            [
+                'username.regex' => 'Username hanya boleh huruf, angka, titik, dan underscore, tidak boleh diawali/diakhiri titik atau mengandung dua titik berturut-turut.',
             ]
         );
 
