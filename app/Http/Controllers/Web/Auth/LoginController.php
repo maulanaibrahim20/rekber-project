@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Web\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
-    protected $user;
+    protected $admin;
     public function __construct()
     {
-        $this->user = new User();
+        $this->admin = new Admin();
     }
     public function index()
     {
@@ -24,45 +24,38 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|min:3|max:50',
+            'login' => 'required|min:3|max:50',
             'password' => 'required|min:6|max:50',
         ]);
 
         DB::beginTransaction();
 
         try {
-            $user = $this->user->where('email', $request->email)->first();
+            $loginField = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-            if (!$user || !Hash::check($request->password, $user->password)) {
-                return response()->json(['status' => false, 'message' => 'Email atau password salah.'], 401);
+            $admin = $this->admin->where($loginField, $request->login)->first();
+
+            if (!$admin || !Hash::check($request->password, $admin->password)) {
+                return response()->json(['status' => false, 'message' => 'Email/Username atau password salah.'], 401);
             }
 
-            if ($user->email_verified_at == null) {
+            if ($admin->email_verified_at === null) {
                 return response()->json(['status' => false, 'message' => 'Akun anda belum diverifikasi. Silahkan hubungi admin.'], 401);
             }
 
-            if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            if (Auth::guard('admin')->attempt([$loginField => $request->login, 'password' => $request->password])) {
                 $request->session()->regenerate();
                 DB::commit();
-
-                $redirectUrl = match (true) {
-                    $user->hasRole($this->user::SUPER_ADMIN) => url('/~admin'),
-                    default => null,
-                };
-
-                if (!$redirectUrl) {
-                    return response()->json(['status' => false, 'message' => 'Role tidak valid.'], 403);
-                }
 
                 return response()->json([
                     'status' => true,
                     'message' => 'Login berhasil.',
-                    'redirect' => $redirectUrl
+                    'redirect' => url('/~admin')
                 ]);
             }
 
             DB::rollBack();
-            return response()->json(['status' => false, 'message' => 'Email atau password salah.'], 401);
+            return response()->json(['status' => false, 'message' => 'Email/Username atau password salah.'], 401);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['status' => false, 'message' => 'Terjadi kesalahan. ' . $e->getMessage()], 500);

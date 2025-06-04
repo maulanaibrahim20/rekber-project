@@ -11,8 +11,8 @@
             <form id="form-login" method="POST" autocomplete="off" novalidate>
                 @csrf
                 <div class="mb-3">
-                    <label class="form-label">Email address</label>
-                    <input type="email" name="email" class="form-control" placeholder="your@email.com"
+                    <label class="form-label">Email atau Username</label>
+                    <input type="text" name="login" class="form-control" placeholder="your@email.com / username"
                         value="superadmin@mailinator.com" required>
                 </div>
                 <div class="mb-2">
