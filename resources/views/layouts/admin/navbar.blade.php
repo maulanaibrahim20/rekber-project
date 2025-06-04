@@ -323,8 +323,8 @@
                         class="nav-item dropdown {{ Request::segment(3) === 'permission' || Request::segment(3) === 'assign-permission' ? 'active' : '' }}">
                         <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
                             data-bs-auto-close="outside" role="button" aria-expanded="false">
-                            <span
-                                class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/package -->
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <!-- Icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round"
@@ -342,6 +342,7 @@
                         <div class="dropdown-menu">
                             <div class="dropdown-menu-columns">
                                 <div class="dropdown-menu-column">
+                                    {{-- @can('menu assign') --}}
                                     <a class="dropdown-item {{ Request::segment(3) === 'permission' ? 'active' : '' }}"
                                         href="{{ route('config.permission') }}">
                                         Permission
@@ -350,6 +351,11 @@
                                         href="{{ route('config.assign') }}">
                                         Assign Permission
                                     </a>
+                                    {{-- @else
+                                    <span class="dropdown-item text-muted">
+                                        🔒 Tidak punya akses konfigurasi
+                                    </span>
+                                    @endcan --}}
                                 </div>
                             </div>
                         </div>

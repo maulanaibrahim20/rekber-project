@@ -56,11 +56,9 @@ Route::prefix('~admin')->group(function () {
             Route::group(['prefix' => 'assign-permission', 'controller' => AssignPermissionController::class], function () {
                 Route::get('', 'index')->name('assign');
                 Route::get('/getData', 'getData')->name('assign.getData');
-                Route::get('/create', 'create')->name('assign.create');
-                Route::post('/store',  'store')->name('assign.store');
-                Route::get('/edit/{id}',  'edit')->name('assign.edit');
-                Route::put('/update/{id}',  'update')->name('assign.update');
-                Route::delete('/destroy/{id}',  'destroy')->name('assign.destroy');
+                Route::get('/create/{id}', 'create')->name('assign.create');
+                Route::post('/assign', 'assignPermission')->name('assign.assign');
+                Route::post('/revoke', 'revokePermission')->name('assign.revoke');
             });
         });
 
