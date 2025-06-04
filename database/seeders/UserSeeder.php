@@ -16,19 +16,33 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        Admin::factory()->create([
+
+        $roles = ['Super Admin', 'Admin'];
+
+        foreach ($roles as $role) {
+            Role::create([
+                'name' => $role,
+                'guard_name' => 'admin',
+            ]);
+        }
+
+        $superAdmin = Admin::factory()->create([
             'name' => 'Super Admin',
             'email' => 'superadmin@mailinator.com',
             'username' => 'superadmin',
             'is_super_admin' => true,
         ]);
 
-        Admin::factory()->create([
+        $superAdmin->assignRole('Super Admin');
+
+        $admin = Admin::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@mailinator.com',
             'username' => 'admin',
             'is_super_admin' => false,
         ]);
+
+        $admin->assignRole('Admin');
 
         User::factory()->create([
             'name' => 'User',
