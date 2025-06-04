@@ -80,7 +80,7 @@ class LoginController extends Controller
                 return Message::unauhtorize();
             }
 
-            $tokenData->delete();
+            // $tokenData->delete();
 
             return Message::success('Token is valid', [
                 'user' => $user,

@@ -26,7 +26,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('auth')->group(function () {
-        Route::post('check', [AuthLoginController::class, 'checkAuth']);
+        Route::get('check', [AuthLoginController::class, 'checkAuth']);
     });
 
     Route::get('/user', [UserController::class, 'index']);
