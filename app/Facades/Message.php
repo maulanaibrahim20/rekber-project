@@ -8,13 +8,13 @@ class Message extends JsonResponse
 {
     public static function render(
         $code = self::HTTP_OK,
-        $messages = "",
+        $message = "",
         $data = null,
         $pagination = null
     ): JsonResponse {
         $response = [
             "code" => $code,
-            "messages" => $messages
+            "message" => $message
         ];
 
         if ($data || (is_array($data))) {
@@ -30,23 +30,23 @@ class Message extends JsonResponse
     }
 
     public static function success(
-        $messages = "",
+        $message = "",
         $data = null
     ): JsonResponse {
         return self::render(
             code: self::HTTP_OK,
-            messages: $messages,
+            message: $message,
             data: $data
         );
     }
 
     public static function paginate(
-        $messages = "",
+        $message = "",
         $data
     ): JsonResponse {
         return self::render(
             code: self::HTTP_OK,
-            messages: $messages,
+            message: $message,
             data: $data->items(),
             pagination: [
                 "current_page" => $data->currentPage(),
@@ -58,74 +58,74 @@ class Message extends JsonResponse
         );
     }
     public static function create(
-        $messages = "Data has been created!",
+        $message = "Data has been created!",
         $data = null
     ): JsonResponse {
         return self::render(
             code: self::HTTP_CREATED,
-            messages: $messages,
+            message: $message,
             data: $data
         );
     }
 
     public static function unauhtorize(
-        $messages = "Unauthorized!"
+        $message = "Unauthorized!"
     ): JsonResponse {
         return self::render(
             code: self::HTTP_UNAUTHORIZED,
-            messages: $messages
+            message: $message
         );
     }
 
     public static function warning(
-        $messages = ""
+        $message = ""
     ): JsonResponse {
         return self::render(
             code: self::HTTP_BAD_REQUEST,
-            messages: $messages
+            message: $message
         );
     }
 
     public static function notFound(
-        $messages = "Data not found!"
+        $message = "Data not found!"
     ): JsonResponse {
         return self::render(
             code: self::HTTP_NOT_FOUND,
-            messages: $messages
+            message: $message
         );
     }
 
     public static function validator(
-        $messages = "Fill data correctly!",
+        $message = "Fill data correctly!",
         $data = [],
         $isList = false
     ): JsonResponse {
         if ($isList && count($data) > 1) {
-            $messages .= ' and ' . (count($data) - 1) . ' other errors.';
+            $message .= ' and ' . (count($data) - 1) . ' other errors.';
         }
 
         return self::render(
             code: self::HTTP_UNPROCESSABLE_ENTITY,
-            messages: $messages,
+            message: $message,
             data: $data
         );
     }
 
     public static function error(
-        $messages = "Something went Wrong!"
+        $message = "Something went Wrong!"
     ): JsonResponse {
         return self::render(
             code: self::HTTP_INTERNAL_SERVER_ERROR,
-            messages: $messages
+            message: $message
         );
     }
 
     public static function forbidden(
-        $messages = "Forbidden!"
+        $message = "Forbidden!"
     ): JsonResponse {
         return self::render(
             code: self::HTTP_FORBIDDEN,
-            messages: $messages
+            message: $message
         );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Facades\Message;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use Illuminate\Http\Request;
@@ -9,9 +10,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
 
 class AdministratorController extends Controller
 {
+    protected $admin;
+
+    public function __construct()
+    {
+        $this->admin = new Admin();
+    }
     public function index()
     {
         return view('admin.pages.administrator.index');
@@ -20,7 +28,7 @@ class AdministratorController extends Controller
     public function getData(Request $request)
     {
         if ($request->ajax()) {
-            $data = Admin::select(['id', 'name', 'email', 'username', 'status', 'is_super_admin', 'created_at']);
+            $data = $this->admin->select(['id', 'name', 'email', 'username', 'status', 'is_super_admin', 'created_at']);
             return DataTables::of($data)
                 ->addColumn('action', function ($row) {
                     return '
@@ -61,32 +69,36 @@ class AdministratorController extends Controller
 
         if ($validator->fails()) {
             if ($request->ajax()) {
-                return response()->json(['message' => $validator->errors()->first()], 422);
+                return Message::validator(
+                    $validator->errors()->first(),
+                );
             }
             return back()->with('error', $validator->errors()->first());
         }
 
         try {
 
-            Admin::create([
+            $this->admin->create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'username' => $request->username,
                 'password' => Hash::make($request->password),
                 'is_super_admin' => $request->is_super_admin ?? false,
                 'status' => $request->status,
+                'email_verified_at' => now(),
+                'remember_token' => Str::random(10),
             ]);
             DB::commit();
 
             if ($request->ajax()) {
-                return response()->json(['message' => 'Administrator berhasil ditambahkan.']);
+                return Message::success('Administrator berhasil ditambahkan.');
             }
             return back()->with('success', 'Administrator berhasil ditambahkan.');
         } catch (\Throwable $th) {
             DB::rollBack();
 
             if ($request->ajax()) {
-                return response()->json(['message' => 'Terjadi kesalahan saat menyimpan data.'], 500);
+                return Message::error('Terjadi kesalahan saat menyimpan data.');
             }
 
             return back()->with('error', 'Something went wrong.');
@@ -95,7 +107,7 @@ class AdministratorController extends Controller
 
     public function edit($id)
     {
-        $data['admin'] = Admin::findOrFail($id);
+        $data['admin'] = $this->admin->findOrFail($id);
         return view('admin.pages.administrator.edit', $data);
     }
 
@@ -112,14 +124,14 @@ class AdministratorController extends Controller
 
         if ($validator->fails()) {
             if ($request->ajax()) {
-                return response()->json(['message' => $validator->errors()->first()], 422);
+                return Message::validator($validator->errors()->first());
             }
             return back()->with('error', $validator->errors()->first());
         }
 
         try {
 
-            $admin = Admin::findOrFail($id);
+            $admin = $this->admin->findOrFail($id);
 
             if ($request->has('password') && $request->password) {
                 $validator = Validator::make($request->all(), [
@@ -128,7 +140,7 @@ class AdministratorController extends Controller
 
                 if ($validator->fails()) {
                     if ($request->ajax()) {
-                        return response()->json(['message' => $validator->errors()->first()], 422);
+                        return Message::validator($validator->errors()->first());
                     }
                     return back()->with('error', $validator->errors()->first());
                 }
@@ -145,14 +157,14 @@ class AdministratorController extends Controller
             DB::commit();
 
             if ($request->ajax()) {
-                return response()->json(['message' => 'Administrator berhasil diupdate.']);
+                return Message::success('Administrator berhasil diupdate.');
             }
             return back()->with('success', 'Administrator berhasil diupdate.');
         } catch (\Throwable $th) {
             DB::rollBack();
 
             if ($request->ajax()) {
-                return response()->json(['message' => 'Terjadi kesalahan saat menyimpan data.'], 500);
+                return Message::error('Terjadi kesalahan saat mengupdate data.');
             }
 
             return back()->with('error', 'Something went wrong.');
@@ -161,14 +173,22 @@ class AdministratorController extends Controller
 
     public function destroy($id)
     {
-        $admin = Admin::findOrFail($id);
+        try {
+            DB::beginTransaction();
 
-        if ($admin->is_super_admin) {
-            return response()->json(['message' => 'Tidak bisa menghapus Super Admin'], 403);
+            $admin = $this->admin->findOrFail($id);
+
+            if ($admin->is_super_admin) {
+                return Message::warning('Tidak dapat menghapus administrator super.');
+            }
+
+            $admin->delete();
+
+            DB::commit();
+            return Message::success('Administrator berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Message::error('Gagal menghapus administrator: ' . $e->getMessage());
         }
-
-        $admin->delete();
-
-        return response()->json(['message' => 'Administrator berhasil dihapus']);
     }
 }
