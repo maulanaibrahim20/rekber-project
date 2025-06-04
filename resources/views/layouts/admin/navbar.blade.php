@@ -3,8 +3,8 @@
         <div class="navbar">
             <div class="container-xl">
                 <ul class="navbar-nav">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="./">
+                    <li class="nav-item {{ Request::is('~admin') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('dashboard') }}">
                             <span
                                 class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
@@ -257,6 +257,36 @@
                                 Form elements
                             </span>
                         </a>
+                    </li>
+                    <li class="nav-item dropdown {{ Request::segment(2) === 'administrator' ? 'active' : '' }}">
+                        <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown"
+                            data-bs-auto-close="outside" role="button" aria-expanded="false">
+                            <span
+                                class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/package -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-shield-check">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path
+                                        d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" />
+                                    <path d="M15 19l2 2l4 -4" />
+                                </svg>
+                            </span>
+                            <span class="nav-link-title">
+                                Administrator
+                            </span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-menu-columns">
+                                <div class="dropdown-menu-column">
+                                    <a class="dropdown-item {{ Request::segment(3) === 'account' ? 'active' : '' }}"
+                                        href="{{ route('administrator.account') }}">
+                                        Account User
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </li>
                 </ul>
                 <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
