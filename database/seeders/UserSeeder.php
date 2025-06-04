@@ -30,7 +30,6 @@ class UserSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'superadmin@mailinator.com',
             'username' => 'superadmin',
-            'is_super_admin' => true,
         ]);
 
         $superAdmin->assignRole('Super Admin');
@@ -39,7 +38,6 @@ class UserSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'admin@mailinator.com',
             'username' => 'admin',
-            'is_super_admin' => false,
         ]);
 
         $admin->assignRole('Admin');

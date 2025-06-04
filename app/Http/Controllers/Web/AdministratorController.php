@@ -28,7 +28,7 @@ class AdministratorController extends Controller
     public function getData(Request $request)
     {
         if ($request->ajax()) {
-            $data = $this->admin->select(['id', 'name', 'email', 'username', 'status', 'is_super_admin', 'created_at']);
+            $data = $this->admin->select(['id', 'name', 'email', 'username', 'status', 'created_at']);
             return DataTables::of($data)
                 ->addColumn('action', function ($row) {
                     return '
@@ -42,7 +42,6 @@ class AdministratorController extends Controller
                     </div>
                     ';
                 })
-                ->editColumn('is_super_admin', fn($row) => $row->is_super_admin ? 'Yes' : 'No')
                 ->editColumn('status', fn($row) => ucfirst($row->status))
                 ->editColumn('created_at', fn($row) => $row->created_at->format('Y-m-d H:i'))
                 ->rawColumns(['action'])
