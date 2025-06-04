@@ -25,14 +25,14 @@ class AdministratorController extends Controller
                 ->addColumn('action', function ($row) {
                     return '
                     <div class="d-flex justify-content-center">
-                    <a href="' . url('administrator.edit', $row->id) . '" class="btn btn-primary me-1" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <a href="javascript:void(0);" onclick="deleteAdmin(' . $row->id . ')" class="btn btn-danger" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </a>
+                        <a href="#" class="btn btn-primary me-1 open-global-modal" title="Edit" data-url="' . route('administrator.edit', $row->id) . '">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="btn btn-danger btn-delete-admin" data-id="' . $row->id . '" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
                     </div>
-                ';
+                    ';
                 })
                 ->editColumn('is_super_admin', fn($row) => $row->is_super_admin ? 'Yes' : 'No')
                 ->editColumn('status', fn($row) => ucfirst($row->status))
@@ -91,5 +91,84 @@ class AdministratorController extends Controller
 
             return back()->with('error', 'Something went wrong.');
         }
+    }
+
+    public function edit($id)
+    {
+        $data['admin'] = Admin::findOrFail($id);
+        return view('admin.pages.administrator.edit', $data);
+    }
+
+    public function update(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:admins,email,' . $id,
+            'username' => 'required|string|unique:admins,username,' . $id,
+            'is_super_admin' => 'nullable|boolean',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json(['message' => $validator->errors()->first()], 422);
+            }
+            return back()->with('error', $validator->errors()->first());
+        }
+
+        try {
+
+            $admin = Admin::findOrFail($id);
+
+            if ($request->has('password') && $request->password) {
+                $validator = Validator::make($request->all(), [
+                    'password' => 'required|min:6|confirmed',
+                ]);
+
+                if ($validator->fails()) {
+                    if ($request->ajax()) {
+                        return response()->json(['message' => $validator->errors()->first()], 422);
+                    }
+                    return back()->with('error', $validator->errors()->first());
+                }
+
+                $admin->password = Hash::make($request->password);
+            }
+            $admin->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'username' => $request->username,
+                'is_super_admin' => $request->is_super_admin ?? false,
+                'status' => $request->status,
+            ]);
+            DB::commit();
+
+            if ($request->ajax()) {
+                return response()->json(['message' => 'Administrator berhasil diupdate.']);
+            }
+            return back()->with('success', 'Administrator berhasil diupdate.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            if ($request->ajax()) {
+                return response()->json(['message' => 'Terjadi kesalahan saat menyimpan data.'], 500);
+            }
+
+            return back()->with('error', 'Something went wrong.');
+        }
+    }
+
+    public function destroy($id)
+    {
+        $admin = Admin::findOrFail($id);
+
+        if ($admin->is_super_admin) {
+            return response()->json(['message' => 'Tidak bisa menghapus Super Admin'], 403);
+        }
+
+        $admin->delete();
+
+        return response()->json(['message' => 'Administrator berhasil dihapus']);
     }
 }

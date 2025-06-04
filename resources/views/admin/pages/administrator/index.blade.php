@@ -88,5 +88,42 @@
                 ]
             });
         });
+
+        $(document).on('click', '.btn-delete-admin', function () {
+            const id = $(this).data('id');
+            const url = '{{ route('administrator.destroy', ':id') }}'.replace(':id', id);
+
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: "Data administrator akan dihapus permanen.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            Swal.fire('Terhapus!', response.message, 'success');
+                            $('#admin-table').DataTable().ajax.reload(null, false);
+                        },
+                        error: function (xhr) {
+                            let msg = 'Terjadi kesalahan saat menghapus.';
+                            if (xhr.responseJSON?.message) {
+                                msg = xhr.responseJSON.message;
+                            }
+                            Swal.fire('Gagal', msg, 'error');
+                        }
+                    });
+                }
+            });
+        });
+
     </script>
 @endpush
