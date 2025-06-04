@@ -14,11 +14,30 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        // Permission::create(['name' => 'edit user', 'guard_name' => 'admin']);
-        // app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        $permissionName = [
+            'add user',
+            'edit user',
+            'delete user',
+            'add permission',
+            'edit permission',
+            'delete permission',
+            'menu permission',
+            'add administrator',
+            'edit administrator',
+            'delete administrator',
+        ];
+
+        $guardName = 'admin';
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        foreach ($permissionName as $name) {
+            Permission::create([
+                'name' => $name,
+                'guard_name' => $guardName
+            ]);
+        }
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $role = Role::where('id', 1)->first();
-        $role->givePermissionTo(['edit user', 'add user']);
+        $role->givePermissionTo($permissionName);
     }
 }
