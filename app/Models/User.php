@@ -34,6 +34,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'gender',
         'is_private',
         'birth_date',
+        'status',
+        // 'email_verified_at',
+        // 'remember_token',
     ];
 
     /**
@@ -56,6 +59,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_private' => 'boolean',
+            'birth_date' => 'date',
         ];
     }
 }
