@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
@@ -37,7 +39,7 @@ class PermissionSeeder extends Seeder
         }
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $role = Role::where('id', 1)->first();
-        $role->givePermissionTo($permissionName);
+        $user = Admin::where('id', 1)->first();
+        $user->givePermissionTo($permissionName);
     }
 }

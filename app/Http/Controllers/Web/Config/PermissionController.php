@@ -32,10 +32,6 @@ class PermissionController extends Controller
                 ->addColumn('action', function ($row) {
                     return '
                         <div class="d-flex justify-content-center">
-                            <a href="#" class="btn btn-primary me-1 open-global-modal" title="Edit"
-                                data-url="' . route('config.permission.edit', $row->id) . '">
-                                <i class="fas fa-edit"></i>
-                            </a>
                             <a href="javascript:void(0);" class="btn btn-danger btn-delete-permission" title="Delete"
                                 data-id="' . $row->id . '">
                                 <i class="fas fa-trash"></i>
