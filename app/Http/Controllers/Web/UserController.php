@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Facades\Message;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Trait\AvatarInitialTrait;
@@ -15,6 +16,13 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
+    protected $user;
+
+    public function __construct()
+    {
+        $this->user = new User();
+    }
+
     use AvatarInitialTrait;
     public function index()
     {
@@ -24,7 +32,7 @@ class UserController extends Controller
     public function getData(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::select([
+            $data = $this->user->select([
                 'id',
                 'name',
                 'email',
@@ -93,16 +101,16 @@ class UserController extends Controller
 
         if ($validator->fails()) {
             if ($request->ajax()) {
-                return response()->json([
-                    'message' => $validator->errors()->first(),
-                ], 422);
+                return Message::validator(
+                    $validator->errors()->first(),
+                );
             }
 
             return back()->withErrors($validator)->withInput();
         }
 
         try {
-            $user = User::create([
+            $user = $this->user->create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'username' => $request->username,
@@ -125,9 +133,7 @@ class UserController extends Controller
             DB::commit();
 
             if ($request->ajax()) {
-                return response()->json([
-                    'message' => 'User berhasil ditambahkan.'
-                ]);
+                return Message::success('User berhasil ditambahkan.');
             }
 
             return redirect()->route('user')->with('success', 'User berhasil ditambahkan.');
@@ -135,9 +141,7 @@ class UserController extends Controller
             DB::rollBack();
 
             if ($request->ajax()) {
-                return response()->json([
-                    'message' => 'Terjadi kesalahan saat menyimpan data.'
-                ], 500);
+                return Message::error('Terjadi kesalahan saat menyimpan data.');
             }
 
             return back()->with('error', 'Something went wrong.');
@@ -146,14 +150,15 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $data['user'] = User::findOrFail($id);
+        $data['user'] = $this->user->findOrFail($id);
 
         return view('admin.pages.user.edit', $data);
     }
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        DB::beginTransaction();
+        $user = $this->user->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -176,7 +181,9 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()->first()], 422);
+            return Message::validator(
+                $validator->errors()->first(),
+            );
         }
 
         try {
@@ -191,23 +198,25 @@ class UserController extends Controller
                 'is_private' => $request->is_private ?? false,
                 'password' => $request->filled('password') ? Hash::make($request->password) : $user->password,
             ]);
+            DB::commit();
 
-            return response()->json(['message' => 'User berhasil diperbarui.']);
+            return Message::success('User berhasil diperbarui.');
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Terjadi kesalahan saat memperbarui data.'], 500);
+            DB::rollBack();
+            return Message::error('Terjadi kesalahan saat memperbarui data user.');
         }
     }
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        $user = $this->user->findOrFail($id);
 
         try {
             $user->delete();
 
-            return response()->json(['message' => 'User berhasil dihapus.']);
+            return Message::success('User berhasil dihapus.');
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Gagal menghapus user.'], 500);
+            return Message::error('Terjadi kesalahan saat menghapus user.');
         }
     }
 }
