@@ -64,4 +64,20 @@ class User extends Authenticatable implements MustVerifyEmail
             'birth_date' => 'date',
         ];
     }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(ProductLike::class);
+    }
+
+    // Comments yang dibuat user ini
+    public function comments()
+    {
+        return $this->hasMany(ProductComments::class);
+    }
 }
