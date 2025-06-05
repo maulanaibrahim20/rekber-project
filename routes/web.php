@@ -53,6 +53,7 @@ Route::prefix('~admin')->group(function () {
                 Route::put('/update/{id}',  'update')->name('permission.update');
                 Route::delete('/destroy/{id}',  'destroy')->name('permission.destroy');
             });
+
             Route::group(['prefix' => 'assign-permission', 'controller' => AssignPermissionController::class], function () {
                 Route::get('', 'index')->name('assign');
                 Route::get('/getData', 'getData')->name('assign.getData');

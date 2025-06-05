@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Trait\HasUUid;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, HasUUid;
     /**
      * The attributes that are mass assignable.
      *
@@ -62,5 +63,21 @@ class User extends Authenticatable implements MustVerifyEmail
             'is_private' => 'boolean',
             'birth_date' => 'date',
         ];
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(ProductLike::class);
+    }
+
+    // Comments yang dibuat user ini
+    public function comments()
+    {
+        return $this->hasMany(ProductComments::class);
     }
 }
