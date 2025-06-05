@@ -44,6 +44,7 @@ class UserSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'User',
+            'linkname' => 'user',
             'email' => 'user@mailinator.com',
         ]);
     }

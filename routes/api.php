@@ -26,13 +26,14 @@ Route::prefix('auth')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
 });
 
+Route::get('/product', [ProductController::class, 'index']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::get('check', [AuthLoginController::class, 'checkAuth']);
     });
 
     Route::group(['prefix' => 'product', 'controller' => ProductController::class], function () {
-        Route::get('/', 'index');
         Route::post('/store', 'store');
         Route::get('/{uuid}', 'show');
         Route::get('/{uuid}/edit', 'edit');

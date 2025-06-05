@@ -20,8 +20,7 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->decimal('price', 10, 2);
             $table->tinyInteger('priority')->default(0)->comment('1 = sticky, 0 = normal');
-            $table->enum('status', ['draft', 'published', 'archived'])->default('published');
-            $table->text('tags')->nullable();
+            $table->integer('status')->default(1)->comment('1 = published, 2 = draft, 3 = archived');
             $table->timestamps();
         });
     }

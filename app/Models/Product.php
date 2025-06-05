@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\Status;
 use App\Trait\HasUUid;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,6 +10,21 @@ class Product extends Model
 {
     use HasUUid;
     protected $guarded = ['id'];
+
+    // Value Attribute dari productStatus in config/rekber.php
+    public function getStatusAttribute($value)
+    {
+        return [
+            'key'   => (string) $value,
+            'value' => Status::label('productStatus', $value),
+        ];
+    }
+
+    // Nilai Asli dari status
+    // public function getStatusRawAttribute()
+    // {
+    //     return $this->attributes['status'];
+    // }
 
     public function user()
     {

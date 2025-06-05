@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enum\Status;
 use App\Facades\Message;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Tag;
+use App\Rules\ValidateStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,10 +24,20 @@ class ProductController extends Controller
 
     public function index()
     {
-        $data = $this->product->with(['images', 'tags', 'likes', 'comments'])->latest()->get();
+        $query = $this->product;
 
-        return Message::success('Products retrieved successfully', $data);
+        if (Auth::check()) {
+            $query = $query->where('user_id', Auth::user()->id);
+        } else {
+            $status = Status::fromString('productStatus', 'PUBLISHED') ?? 1;
+            $query = $query->where('status', $status);
+        }
+
+        $data = $query->paginate();
+
+        return Message::paginate('Products retrieved successfully', $data);
     }
+
 
     public function store(Request $request)
     {
@@ -33,11 +45,10 @@ class ProductController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name'        => 'required|string|max:255',
-            'caption'     => 'nullable|string',
             'description' => 'nullable|string',
             'location'    => 'nullable|string|max:255',
             'price'       => 'required|numeric|min:0',
-            'status'      => 'in:draft,published,hidden',
+            'status'      => ['nullable', 'string', new ValidateStatus('productStatus')],
             'priority'    => 'nullable|integer',
             'tags'        => 'array',
             'tags.*'      => ['string', 'max:50', 'regex:/^[a-zA-Z0-9-_]+$/'],
@@ -49,14 +60,15 @@ class ProductController extends Controller
         }
 
         try {
+            $statusCode = Status::fromString('productStatus', $request->status ?? 'PUBLISHED') ?? 1;
+
             $product = Product::create([
                 'user_id'       => Auth::user()->id,
                 'name'          => $request->name,
-                'caption'       => $request->caption,
                 'description'   => $request->description,
                 'location'      => $request->location,
                 'price'         => $request->price,
-                'status'        => $request->status ?? 'draft',
+                'status'        => $statusCode,
                 'priority'      => $request->priority ?? 0,
             ]);
 
@@ -95,7 +107,7 @@ class ProductController extends Controller
 
             return Message::success('Product detail retrieved successfully', $product);
         } catch (\Throwable $th) {
-            return Message::error('Product not found or an error occurred');
+            return Message::error('Product not found or an error occurred' . $th->getMessage());
         }
     }
 
@@ -120,17 +132,16 @@ class ProductController extends Controller
     public function update(Request $request, $uuid)
     {
         $validator = Validator::make($request->all(), [
-            'name'       => 'sometimes|required|string|max:255',
-            'caption'    => 'nullable|string',
+            'name'        => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
-            'location'   => 'nullable|string|max:255',
-            'price'      => 'sometimes|required|numeric|min:0',
-            'status'     => 'in:draft,published,hidden',
-            'priority'   => 'nullable|integer',
-            'tags'       => 'array',
-            'tags.*'     => ['string', 'max:50', 'regex:/^[a-zA-Z0-9-_]+$/'],
-            'images'     => 'nullable|array',
-            'images.*'   => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'location'    => 'nullable|string|max:255',
+            'price'       => 'sometimes|required|numeric|min:0',
+            'status'      => ['nullable', 'string', new ValidateStatus('productStatus')],
+            'priority'    => 'nullable|integer',
+            'tags'        => 'array',
+            'tags.*'      => ['string', 'max:50', 'regex:/^[a-zA-Z0-9-_]+$/'],
+            'images'      => 'nullable|array',
+            'images.*'    => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -150,11 +161,12 @@ class ProductController extends Controller
 
             $product->update([
                 'name'        => $request->name ?? $product->name,
-                'caption'     => $request->caption ?? $product->caption,
                 'description' => $request->description ?? $product->description,
                 'location'    => $request->location ?? $product->location,
                 'price'       => $request->price ?? $product->price,
-                'status'      => $request->status ?? $product->status,
+                'status'      => $request->has('status')
+                    ? (Status::fromString('productStatus', $request->status) ?? $product->status)
+                    : $product->status,
                 'priority'    => $request->priority ?? $product->priority,
             ]);
 

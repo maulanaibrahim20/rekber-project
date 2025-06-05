@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Enum\Status;
 use App\Trait\HasUUid;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -62,6 +64,14 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'is_private' => 'boolean',
             'birth_date' => 'date',
+        ];
+    }
+
+    public function getStatusAttribute($value)
+    {
+        return [
+            'key'   => (string) $value,
+            'value' => Status::label('userStatus', $value),
         ];
     }
 

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique()->nullable();
             $table->string('name');
             $table->string('username')->unique();
             $table->string('linkname')->unique()->nullable();
@@ -26,7 +27,7 @@ return new class extends Migration
             $table->string('profile_picture')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->boolean('is_private')->default(false);
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->integer('status')->default(1)->comment('1 = active, 2 = inactive, 3 = banned');
             $table->rememberToken();
             $table->timestamps();
         });

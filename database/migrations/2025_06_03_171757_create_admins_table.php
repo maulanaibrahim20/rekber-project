@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('avatar')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->integer('status')->default(1)->comment('1 = active, 2 = inactive, 3 = banned');
             $table->rememberToken();
             $table->timestamps();
         });
