@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Auth\LoginController as AuthLoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
+use App\Http\Controllers\Api\LikeAndCommentController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Auth\LoginController;
@@ -37,6 +38,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{uuid}/edit', 'edit');
         Route::put('/{uuid}/update', 'update');
         Route::delete('/{uuid}/delete', 'destroy');
+
+        Route::group(['controller' => LikeAndCommentController::class], function () {
+            Route::post('/{uuid}/like', 'toggleLike');
+            Route::post('/{uuid}/comments', 'comment');
+        });
     });
 
     Route::get('/user', [UserController::class, 'index']);
