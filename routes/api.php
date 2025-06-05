@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Auth\LoginController as AuthLoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Http\Request;
@@ -27,6 +28,15 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::get('check', [AuthLoginController::class, 'checkAuth']);
+    });
+
+    Route::group(['prefix' => 'product', 'controller' => ProductController::class], function () {
+        Route::get('/', 'index');
+        Route::post('/store', 'store');
+        Route::get('/{uuid}', 'show');
+        Route::get('/{uuid}/edit', 'edit');
+        Route::put('/{uuid}/update', 'update');
+        Route::delete('/{uuid}/delete', 'destroy');
     });
 
     Route::get('/user', [UserController::class, 'index']);

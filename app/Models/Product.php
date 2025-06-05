@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Trait\HasUUid;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
+    use HasUUid;
     protected $guarded = ['id'];
 
     public function user()
