@@ -33,4 +33,9 @@ class Product extends Model
     {
         return $this->likes()->where('user_id', $userId)->exists();
     }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'product_tag');
+    }
 }

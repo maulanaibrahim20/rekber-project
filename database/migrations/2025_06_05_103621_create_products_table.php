@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->tinyInteger('priority')->default(0)->comment('1 = sticky, 0 = normal');
             $table->enum('status', ['draft', 'published', 'archived'])->default('published');
+            $table->text('tags')->nullable();
             $table->timestamps();
         });
     }
