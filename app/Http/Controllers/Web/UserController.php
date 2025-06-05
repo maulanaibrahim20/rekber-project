@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enum\Status;
 use App\Facades\Message;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\ValidateStatus;
 use App\Trait\AvatarInitialTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -63,7 +65,9 @@ class UserController extends Controller
                 })
                 ->editColumn('gender', fn($row) => $row->gender ? ucfirst($row->gender) : '-')
                 ->editColumn('is_private', fn($row) => $row->is_private ? 'Yes' : 'No')
-                ->editColumn('status', fn($row) => ucfirst($row->status))
+                ->editColumn('status', function ($row) {
+                    return $row->status['value'];
+                })
                 ->editColumn('created_at', fn($row) => $row->created_at->format('Y-m-d H:i'))
                 ->rawColumns(['action', 'profile_picture'])
                 ->make(true);
@@ -72,7 +76,8 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('admin.pages.user.create');
+        $data['status'] = Status::options('userStatus');
+        return view('admin.pages.user.create', $data);
     }
 
     public function store(Request $request)
@@ -94,7 +99,7 @@ class UserController extends Controller
             'gender' => 'nullable|in:male,female',
             'password' => 'required|min:6|confirmed',
             'is_private' => 'nullable|boolean',
-            'status' => 'required|in:active,inactive',
+            'status'      => ['required', 'string', new ValidateStatus('userStatus')],
         ], [
             'username.regex' => 'Username hanya boleh huruf, angka, titik, dan underscore, tidak boleh diawali/diakhiri titik atau mengandung dua titik berturut-turut.',
         ]);
@@ -151,7 +156,7 @@ class UserController extends Controller
     public function edit($id)
     {
         $data['user'] = $this->user->findOrFail($id);
-
+        $data['status'] = Status::options('userStatus');
         return view('admin.pages.user.edit', $data);
     }
 
@@ -175,7 +180,7 @@ class UserController extends Controller
             'gender' => 'nullable|in:male,female',
             'password' => 'nullable|min:6|confirmed',
             'is_private' => 'nullable|boolean',
-            'status' => 'required|in:active,inactive',
+            'status'      => ['nullable', 'string', new ValidateStatus('userStatus')],
         ], [
             'username.regex' => 'Username hanya boleh huruf, angka, titik, dan underscore, tidak boleh diawali/diakhiri titik atau mengandung dua titik berturut-turut.',
         ]);

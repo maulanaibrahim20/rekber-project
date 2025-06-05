@@ -41,13 +41,17 @@
         <div class="mb-3">
             <label class="form-label">Status</label>
             <select name="status" class="form-select" required>
-                <option value="active" {{ $user->status === 'active' ? 'selected' : '' }}>Active</option>
-                <option value="inactive" {{ $user->status === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                <option disabled>-- Pilih Status --</option>
+                @foreach ($status as $key => $label)
+                    <option value="{{ $key }}" {{ $user->status['key'] == $key ? 'selected' : '' }}>
+                        {{ $label }}
+                    </option>
+                @endforeach
             </select>
         </div>
+
         <div class="form-check">
-            <input type="checkbox" class="form-check-input" name="is_private" value="1" id="isprivate"
-                {{ $user->is_private ? 'checked' : '' }}>
+            <input type="checkbox" class="form-check-input" name="is_private" value="1" id="isprivate" {{ $user->is_private ? 'checked' : '' }}>
             <label class="form-check-label" for="isprivate">Private Profile</label>
         </div>
     </div>

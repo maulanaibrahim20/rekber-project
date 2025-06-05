@@ -40,10 +40,13 @@
         <div class="mb-3">
             <label class="form-label">Status</label>
             <select name="status" class="form-select" required>
-                <option value="active" selected>Active</option>
-                <option value="inactive">Inactive</option>
+                <option disabled selected>-- Pilih Status --</option>
+                @foreach ($status as $key => $label)
+                    <option value="{{ $key }}">{{ $label }}</option>
+                @endforeach
             </select>
         </div>
+
         <div class="form-check">
             <input type="checkbox" class="form-check-input" name="is_private" value="1" id="isprivate">
             <label class="form-check-label" for="isprivate">Private Profile</label>
