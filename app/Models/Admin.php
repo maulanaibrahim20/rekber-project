@@ -13,8 +13,11 @@ class Admin extends Authenticatable
     use HasFactory, Notifiable, HasRoles;
     protected $guarded = ['id'];
 
-    public function getStatusAttribute($value)
-    {
-        return Status::label('userStatus', $value);
-    }
+    // public function getStatusAttribute($value)
+    // {
+    //     return [
+    //         'key'   => (string) $value,
+    //         'value' => Status::label('userStatus', $value),
+    //     ];
+    // }
 }

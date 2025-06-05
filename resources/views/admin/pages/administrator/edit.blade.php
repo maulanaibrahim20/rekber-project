@@ -36,13 +36,18 @@
         <div class="mb-3">
             <label class="form-label">Status</label>
             <select name="status" class="form-select" required>
-                <option value="active" {{ $admin->status == 'active' ? 'selected' : '' }}>Active</option>
-                <option value="inactive" {{ $admin->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                <option disabled>-- Pilih Status --</option>
+                @foreach ($status as $key => $label)
+                    <option value="{{ $key }}" {{ $admin->status == $key ? 'selected' : '' }}>
+                        {{ $label }}
+                    </option>
+                @endforeach
             </select>
         </div>
 
         <div class="form-check">
-            <input type="checkbox" class="form-check-input" name="is_super_admin" value="1" id="superadmin" {{ $admin->is_super_admin ? 'checked' : '' }}>
+         <input type="checkbox" class="form-check-input" name="is_super_admin" value="1" id="superadmin"
+    {{ $admin->hasRole('Super Admin') ? 'checked' : '' }}>
             <label class="form-check-label" for="superadmin">Super Admin</label>
         </div>
     </div>

@@ -77,6 +77,7 @@ class UserController extends Controller
     public function create()
     {
         $data['status'] = Status::options('userStatus');
+        unset($data['status'][3]);
         return view('admin.pages.user.create', $data);
     }
 
