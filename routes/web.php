@@ -6,6 +6,8 @@ use App\Http\Controllers\Web\Auth\LogoutController;
 use App\Http\Controllers\Web\Config\AssignPermissionController;
 use App\Http\Controllers\Web\Config\PermissionController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\TagController;
 use App\Http\Controllers\Web\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +43,19 @@ Route::prefix('~admin')->group(function () {
             Route::get('/edit/{id}',  'edit')->name('user.edit');
             Route::put('/update/{id}',  'update')->name('user.update');
             Route::delete('/destroy/{id}',  'destroy')->name('user.destroy');
+        });
+
+        Route::group(['prefix' => 'product', 'controller' => ProductController::class], function () {
+            Route::get('', 'index')->name('product');
+            Route::get('/getData', 'getData')->name('product.getData');
+            Route::get('/show/{uuid}', 'show')->name('product.show');
+        });
+
+        Route::group(['prefix' => 'tag', 'controller' => TagController::class], function () {
+            Route::get('', 'index')->name('tag');
+            Route::get('/getData', 'getData')->name('tag.getData');
+            Route::get('/create', 'create')->name('tag.create');
+            Route::post('/store', 'store')->name('tag.assign');
         });
 
         Route::prefix('config')->name('config.')->group(function () {
