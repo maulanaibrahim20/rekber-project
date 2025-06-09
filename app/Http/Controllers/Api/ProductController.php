@@ -23,7 +23,7 @@ class ProductController extends Controller
         $this->product = new Product();
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $query = $this->product;
 
@@ -34,7 +34,7 @@ class ProductController extends Controller
             $query = $query->where('status', $status);
         }
 
-        $data = $query->with(['images', 'tags'])->paginate();
+        $data = $query->with(['images', 'tags'])->paginate($request->per_page ?? 10);
 
         return Message::paginate('Products retrieved successfully', new ProductResource($data));
     }
@@ -52,6 +52,7 @@ class ProductController extends Controller
             'priority'    => 'nullable|integer',
             'tags'        => 'array',
             'tags.*'      => ['string', 'max:50', 'regex:/^[a-zA-Z0-9-_]+$/'],
+            'images'      => 'required|array',
             'images.*'    => 'image|max:2048'
         ]);
 

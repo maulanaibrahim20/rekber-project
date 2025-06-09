@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Auth\LoginController as AuthLoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
+use App\Http\Controllers\Api\FaqCategoryController;
 use App\Http\Controllers\Api\LikeAndCommentController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\UserController;
@@ -27,6 +28,8 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::get('/product', [ProductController::class, 'index']);
+Route::get('/faq', [FaqCategoryController::class, 'index']);
+Route::get('/faq/{slug}', [FaqCategoryController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('auth')->group(function () {

@@ -6,6 +6,8 @@ use App\Http\Controllers\Web\Auth\LogoutController;
 use App\Http\Controllers\Web\Config\AssignPermissionController;
 use App\Http\Controllers\Web\Config\PermissionController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\FaqCategoryController;
+use App\Http\Controllers\Web\FaqController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\TagController;
 use App\Http\Controllers\Web\UserController;
@@ -76,6 +78,28 @@ Route::prefix('~admin')->group(function () {
                 Route::get('/create/{id}', 'create')->name('assign.create');
                 Route::post('/assign', 'assignPermission')->name('assign.assign');
                 Route::post('/revoke', 'revokePermission')->name('assign.revoke');
+            });
+        });
+
+        Route::group(['prefix' => 'content-management'], function () {
+            Route::group(['prefix' => 'faq-category', 'controller' => FaqCategoryController::class], function () {
+                Route::get('/', 'index')->name('faq.category');
+                Route::get('/getData', 'getData')->name('faq.category.getData');
+                Route::get('/create', 'create')->name('faq.category.create');
+                Route::post('/store', 'store')->name('faq.category.store');
+                Route::get('/{slug}', 'show')->name('faq.category.show');
+                Route::get('/edit/{slug}', 'edit')->name('faq.category.edit');
+                Route::put('/update/{id}', 'update')->name('faq.category.update');
+                Route::delete('/destroy/{id}', 'destroy')->name('faq.category.destroy');
+            });
+
+            Route::group(['prefix' => 'faq', 'controller' => FaqController::class], function () {
+                Route::get('{slug}/getData', 'getData')->name('faq.getData');
+                Route::get('{slug}/create', 'create')->name('faq.create');
+                Route::post('{slug}/store', 'store')->name('faq.store');
+                Route::get('/edit/{id}', 'edit')->name('faq.edit');
+                Route::put('/update/{id}', 'update')->name('faq.update');
+                Route::delete('/destroy/{id}', 'destroy')->name('faq.destroy');
             });
         });
 

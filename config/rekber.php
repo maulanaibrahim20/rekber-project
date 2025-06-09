@@ -18,4 +18,9 @@ return [
         2 => 'INACTIVE',
         3 => 'BANNED',
     ],
+
+    'faqStatus' => [
+        1 => 'ACTIVE',
+        2 => 'INACTIVE',
+    ],
 ];
