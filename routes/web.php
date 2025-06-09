@@ -49,6 +49,7 @@ Route::prefix('~admin')->group(function () {
             Route::get('', 'index')->name('product');
             Route::get('/getData', 'getData')->name('product.getData');
             Route::get('/show/{uuid}', 'show')->name('product.show');
+            Route::put('/update/status/{uuid}', 'updateStatus')->name('product.updateStatus');
         });
 
         Route::group(['prefix' => 'tag', 'controller' => TagController::class], function () {

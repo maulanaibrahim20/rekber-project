@@ -189,28 +189,31 @@
                         <h5 class="card-title mb-0"><i class="bi bi-gear"></i> Status Management</h5>
                     </div>
                     <div class="card-body">
-                        <form action="{{ url('admin.products.update-status', $product->id) }}" method="POST"
-                            id="statusForm">
+                        <form action="{{ route('product.updateStatus', $product->uuid) }}" method="POST" id="statusForm">
                             @csrf
                             @method('PUT')
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Current Status</label>
                                 <div class="mb-2">
                                     @php
-                                        $status = $product->status['value'];
+                                        $status = $product->status;
                                         $badgeClass = 'bg-secondary';
                                         $iconClass = 'bi-question-circle';
 
-                                        if ($status === 'PUBLISHED') {
+                                        if ($status === 1) {
+                                            $status = 'PUBLISHED';
                                             $badgeClass = 'bg-success';
                                             $iconClass = 'bi-check-circle';
-                                        } elseif ($status === 'DRAFT') {
+                                        } elseif ($status === 2) {
+                                            $status = 'DRAFT';
                                             $badgeClass = 'bg-warning text-dark';
                                             $iconClass = 'bi-pencil';
-                                        } elseif ($status === 'ARCHIVED') {
+                                        } elseif ($status === 3) {
+                                            $status = 'ARCHIVED';
                                             $badgeClass = 'bg-danger';
                                             $iconClass = 'bi-archive';
-                                        } elseif ($status === 'BLOCKED') {
+                                        } elseif ($status === 4) {
+                                            $status = 'BLOCKED';
                                             $badgeClass = 'bg-dark';
                                             $iconClass = 'bi-x-circle';
                                         }
@@ -226,16 +229,16 @@
                                 <label for="status" class="form-label fw-semibold">Change Status</label>
                                 <select class="form-select" id="status" name="status" required>
                                     <option value="" disabled>Select new status...</option>
-                                    <option value="PUBLISHED" {{ $product->status['value'] == 'PUBLISHED' ? 'selected' : '' }}>
+                                    <option value="1" {{ $product->status == 1 ? 'selected' : '' }}>
                                         Published
                                     </option>
-                                    <option value="DRAFT" {{ $product->status['value'] == 'DRAFT' ? 'selected' : '' }}>
+                                    <option value="2" {{ $product->status == 2 ? 'selected' : '' }}>
                                         Draft
                                     </option>
-                                    <option value="ARCHIVED" {{ $product->status['value'] == 'ARCHIVED' ? 'selected' : '' }}>
+                                    <option value="3" {{ $product->status == 3 ? 'selected' : '' }}>
                                         Archived
                                     </option>
-                                    <option value="BLOCKED" {{ $product->status['value'] == 'BLOCKED' ? 'selected' : '' }}>
+                                    <option value="4" {{ $product->status == 4 ? 'selected' : '' }}>
                                         Blocked
                                     </option>
                                 </select>
@@ -244,7 +247,7 @@
                             <div class="mb-3">
                                 <label for="status_reason" class="form-label fw-semibold">Reason (Optional)</label>
                                 <textarea class="form-control" id="status_reason" name="status_reason" rows="3"
-                                    placeholder="Enter reason for status change..."></textarea>
+                                    placeholder="Enter reason for status change...">{{$product->reason}}</textarea>
                             </div>
 
                             <div class="d-grid">

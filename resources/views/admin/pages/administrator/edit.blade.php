@@ -46,8 +46,7 @@
         </div>
 
         <div class="form-check">
-         <input type="checkbox" class="form-check-input" name="is_super_admin" value="1" id="superadmin"
-    {{ $admin->hasRole('Super Admin') ? 'checked' : '' }}>
+            <input type="checkbox" class="form-check-input" name="is_super_admin" value="1" id="superadmin" {{ $admin->hasRole('Super Admin') ? 'checked' : '' }}>
             <label class="form-check-label" for="superadmin">Super Admin</label>
         </div>
     </div>

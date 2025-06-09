@@ -12,18 +12,12 @@ class Product extends Model
     protected $guarded = ['id'];
 
     // Value Attribute dari productStatus in config/rekber.php
-    public function getStatusAttribute($value)
-    {
-        return [
-            'key'   => (string) $value,
-            'value' => Status::label('productStatus', $value),
-        ];
-    }
-
-    // Nilai Asli dari status
-    // public function getStatusRawAttribute()
+    // public function getStatusAttribute($value)
     // {
-    //     return $this->attributes['status'];
+    //     return [
+    //         'key'   => (string) $value,
+    //         'value' => Status::label('productStatus', $value),
+    //     ];
     // }
 
     public function user()

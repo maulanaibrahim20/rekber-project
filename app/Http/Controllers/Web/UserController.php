@@ -66,10 +66,12 @@ class UserController extends Controller
                 ->editColumn('gender', fn($row) => $row->gender ? ucfirst($row->gender) : '-')
                 ->editColumn('is_private', fn($row) => $row->is_private ? 'Yes' : 'No')
                 ->editColumn('status', function ($row) {
-                    return $row->status['value'];
+                    $label = Status::label('userStatus', $row->status);
+                    $class = $row->status == 1 ? 'badge bg-success text-white' : 'badge bg-danger text-white';
+                    return "<span class='{$class}'>{$label}</span>";
                 })
                 ->editColumn('created_at', fn($row) => $row->created_at->format('Y-m-d H:i'))
-                ->rawColumns(['action', 'profile_picture'])
+                ->rawColumns(['action', 'profile_picture', 'status'])
                 ->make(true);
         }
     }

@@ -43,7 +43,7 @@
             <select name="status" class="form-select" required>
                 <option disabled>-- Pilih Status --</option>
                 @foreach ($status as $key => $label)
-                    <option value="{{ $key }}" {{ $user->status['key'] == $key ? 'selected' : '' }}>
+                    <option value="{{ $key }}" {{ $user->status == $key ? 'selected' : '' }}>
                         {{ $label }}
                     </option>
                 @endforeach

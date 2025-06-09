@@ -67,13 +67,13 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function getStatusAttribute($value)
-    {
-        return [
-            'key'   => (string) $value,
-            'value' => Status::label('userStatus', $value),
-        ];
-    }
+    // public function getStatusAttribute($value)
+    // {
+    //     return [
+    //         'key'   => (string) $value,
+    //         'value' => Status::label('userStatus', $value),
+    //     ];
+    // }
 
     public function products()
     {

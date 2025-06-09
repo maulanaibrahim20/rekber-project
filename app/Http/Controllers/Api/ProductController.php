@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enum\Status;
 use App\Facades\Message;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\Tag;
 use App\Rules\ValidateStatus;
@@ -33,11 +34,10 @@ class ProductController extends Controller
             $query = $query->where('status', $status);
         }
 
-        $data = $query->paginate();
+        $data = $query->with(['images', 'tags'])->paginate();
 
-        return Message::paginate('Products retrieved successfully', $data);
+        return Message::paginate('Products retrieved successfully', new ProductResource($data));
     }
-
 
     public function store(Request $request)
     {
@@ -56,7 +56,7 @@ class ProductController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return Message::validator('Validation failed', $validator->errors());
+            return Message::validator($validator->errors()->first(), isList: true);
         }
 
         try {
@@ -90,7 +90,7 @@ class ProductController extends Controller
 
             DB::commit();
 
-            return Message::success('Product created successfully', $product->load(['images', 'tags']));
+            return Message::success('Product created successfully', new ProductResource($product->load(['images', 'tags'])));
         } catch (\Throwable $th) {
             DB::rollBack();
             return Message::error('An error occurred while processing your request: ' . $th->getMessage());
@@ -105,7 +105,7 @@ class ProductController extends Controller
                 ->orWhere('id', $uuid)
                 ->firstOrFail();
 
-            return Message::success('Product detail retrieved successfully', $product);
+            return Message::success('Product detail retrieved successfully', new ProductResource($product));
         } catch (\Throwable $th) {
             return Message::error('Product not found or an error occurred' . $th->getMessage());
         }
@@ -145,7 +145,7 @@ class ProductController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return Message::validator('Validation failed', $validator->errors());
+            return Message::validator($validator->errors()->first(), isList: true);
         }
 
         DB::beginTransaction();
@@ -188,7 +188,7 @@ class ProductController extends Controller
 
             DB::commit();
 
-            return Message::success('Product updated successfully', $product->load(['images', 'tags']));
+            return Message::success('Product updated successfully', new ProductResource($product->load(['images', 'tags'])));
         } catch (\Throwable $th) {
             DB::rollBack();
             return Message::error('An error occurred while updating product: ' . $th->getMessage());

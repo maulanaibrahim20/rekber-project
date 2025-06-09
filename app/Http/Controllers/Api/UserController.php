@@ -27,7 +27,7 @@ class UserController extends Controller
     {
         $user = $this->user->where('id', Auth::user()->id)->first();
 
-        return Message::success('User retrieved successfully', $user);
+        return Message::success('User retrieved successfully', new UserResource($user));
     }
 
     public function update(Request $request)
@@ -50,7 +50,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return Message::validator($validator->errors()->first(), $validator->errors(), isList: true);
+            return Message::validator($validator->errors()->first(), isList: true);
         }
         $userId = Auth::id();
 
@@ -81,7 +81,7 @@ class UserController extends Controller
             ]);
 
             DB::commit();
-            return Message::success('User updated successfully', $user);
+            return Message::success('User updated successfully', new UserResource($user->fresh()));
         } catch (\Throwable $th) {
             DB::rollBack();
             return Message::error('An error occurred while updating the user: ' . $th->getMessage());
