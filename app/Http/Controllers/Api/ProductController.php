@@ -7,11 +7,13 @@ use App\Facades\Message;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\Tag;
 use App\Rules\ValidateStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -36,7 +38,7 @@ class ProductController extends Controller
 
         $data = $query->with(['images', 'tags'])->paginate($request->per_page ?? 10);
 
-        return Message::paginate('Products retrieved successfully', new ProductResource($data));
+        return Message::paginate('Products retrieved successfully', ProductResource::collection($data));
     }
 
     public function store(Request $request)
@@ -49,7 +51,6 @@ class ProductController extends Controller
             'location'    => 'nullable|string|max:255',
             'price'       => 'required|numeric|min:0',
             'status'      => ['nullable', 'string', new ValidateStatus('productStatus')],
-            'priority'    => 'nullable|integer',
             'tags'        => 'array',
             'tags.*'      => ['string', 'max:50', 'regex:/^[a-zA-Z0-9-_]+$/'],
             'images'      => 'required|array',
@@ -70,7 +71,7 @@ class ProductController extends Controller
                 'location'      => $request->location,
                 'price'         => $request->price,
                 'status'        => $statusCode,
-                'priority'      => $request->priority ?? 0,
+                'priority'      => 0,
             ]);
 
             if ($request->has('tags') && is_array($request->tags)) {
@@ -138,10 +139,9 @@ class ProductController extends Controller
             'location'    => 'nullable|string|max:255',
             'price'       => 'sometimes|required|numeric|min:0',
             'status'      => ['nullable', 'string', new ValidateStatus('productStatus')],
-            'priority'    => 'nullable|integer',
             'tags'        => 'array',
             'tags.*'      => ['string', 'max:50', 'regex:/^[a-zA-Z0-9-_]+$/'],
-            'images'      => 'nullable|array',
+            'images'      => 'required|array',
             'images.*'    => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -168,7 +168,6 @@ class ProductController extends Controller
                 'status'      => $request->has('status')
                     ? (Status::fromString('productStatus', $request->status) ?? $product->status)
                     : $product->status,
-                'priority'    => $request->priority ?? $product->priority,
             ]);
 
             if ($request->has('tags') && is_array($request->tags)) {
@@ -216,6 +215,34 @@ class ProductController extends Controller
             return Message::success('Product deleted successfully');
         } catch (\Throwable $th) {
             return Message::error('An error occurred while deleting product: ' . $th->getMessage());
+        }
+    }
+
+    public function deleteImage($id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $user = Auth::user();
+
+            $image = ProductImage::with('product')->findOrFail($id);
+
+            if ($image->product->user_id !== $user->id) {
+                return Message::error('Unauthorized to delete this image');
+            }
+
+            if (Storage::disk('public')->exists($image->image)) {
+                Storage::disk('public')->delete($image->image);
+            }
+
+            $image->delete();
+
+            DB::commit();
+
+            return Message::success('Image deleted successfully');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return Message::error('Failed to delete image: ' . $th->getMessage());
         }
     }
 }
