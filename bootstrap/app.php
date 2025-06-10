@@ -16,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'accept.json' => EnsureAcceptJson::class
         ]);
-        $middleware->appendToGroup('api', EnsureAcceptJson::class);
+        // $middleware->appendToGroup('api', EnsureAcceptJson::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

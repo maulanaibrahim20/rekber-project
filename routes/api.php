@@ -14,22 +14,24 @@ use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+Route::prefix('auth')->group(function () {
+
+    Route::get('email/verify/{id}/{hash}', [RegisterController::class, 'verifyEmail'])
+        ->middleware('signed')
+        ->name('verification.verify');
+
+    Route::post('email/resend', [RegisterController::class, 'resendVerificationEmail']);
+
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotPassword'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword']);
+    Route::post('/login', [AuthLoginController::class, 'login']);
+    Route::post('/register', [RegisterController::class, 'register']);
+});
+
 Route::middleware('accept.json')->group(function () {
-    Route::prefix('auth')->group(function () {
 
-        Route::get('email/verify/{id}/{hash}', [RegisterController::class, 'verifyEmail'])
-            ->middleware('signed')
-            ->name('verification.verify');
-
-        Route::post('email/resend', [RegisterController::class, 'resendVerificationEmail']);
-
-        Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotPassword'])->name('password.reset');
-        Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword']);
-        Route::post('/login', [AuthLoginController::class, 'login']);
-        Route::post('/register', [RegisterController::class, 'register']);
-    });
-
-    Route::get('/product', [ProductController::class, 'index']);
+    Route::get('/product/public', [ProductController::class, 'publicIndex']);
+    Route::get('/product/{uuid}/public', [ProductController::class, 'show']);
     Route::get('/faq', [FaqCategoryController::class, 'index']);
     Route::get('/faq/{slug}', [FaqCategoryController::class, 'show']);
     Route::get('/profile/{username}', [ProfileController::class, 'index']);
@@ -40,6 +42,7 @@ Route::middleware('accept.json')->group(function () {
         });
 
         Route::group(['prefix' => 'product', 'controller' => ProductController::class], function () {
+            Route::get('/', [ProductController::class, 'privateIndex']);
             Route::post('/store', 'store');
             Route::get('/{uuid}', 'show');
             Route::get('/{uuid}/edit', 'edit');

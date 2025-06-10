@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -49,10 +50,24 @@ class LoginController extends Controller
 
             DB::commit();
 
-            return Message::success('Login successfully', [
+            $response = Message::success('Login successfully', [
                 'user' => $user,
                 'token' => $token,
             ]);
+
+            return $response->withCookie(
+                Cookie::make(
+                    'auth_token',
+                    $token,
+                    60 * 24 * 7,
+                    '/',
+                    null,
+                    true,
+                    true,
+                    false,
+                    'lax'
+                )
+            );
         } catch (\Throwable $th) {
             DB::rollBack();
             return Message::error($th->getMessage());
@@ -62,7 +77,7 @@ class LoginController extends Controller
     public function checkAuth(Request $request)
     {
         try {
-            $token = $request->bearerToken();
+            $token = $request->bearerToken() ?? $request->cookie('auth_token');
 
             if (!$token) {
                 return Message::unauhtorize();
@@ -79,8 +94,6 @@ class LoginController extends Controller
             if (!$user) {
                 return Message::unauhtorize();
             }
-
-            // $tokenData->delete();
 
             return Message::success('Token is valid', [
                 'user' => $user,
