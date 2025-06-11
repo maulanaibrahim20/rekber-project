@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\ApiRequestResponseLogger;
+use App\Http\Middleware\CheckRoutePermission;
 use App\Http\Middleware\EnsureAcceptJson;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,7 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'accept.json' => EnsureAcceptJson::class
+            'accept.json' => EnsureAcceptJson::class,
+            'check.permission' => CheckRoutePermission::class
         ]);
         $middleware->group('api', [
             ApiRequestResponseLogger::class,
