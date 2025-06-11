@@ -24,19 +24,24 @@ class ProductController extends Controller
     {
         $this->product = new Product();
     }
-
     public function index(Request $request)
     {
-        $query = $this->product;
+        $query = $this->product->with(['images', 'tags']);
 
-        if (Auth::check()) {
-            $query = $query->where('user_id', Auth::user()->id);
-        } else {
+        $isPublic = $request->has('user_id') && $request->user_id;
+
+        if ($isPublic) {
             $status = Status::fromString('productStatus', 'PUBLISHED') ?? 1;
-            $query = $query->where('status', $status);
+            $query->where('user_id', $request->user_id)
+                ->where('status', $status)
+                ->orderByDesc('created_at');
+        } else {
+            $query->where('user_id', Auth::id())
+                ->orderByDesc('priority')
+                ->orderByDesc('created_at');
         }
 
-        $data = $query->with(['images', 'tags'])->paginate($request->per_page ?? 10);
+        $data = $query->paginate($request->per_page ?? 10);
 
         return Message::paginate('Products retrieved successfully', ProductResource::collection($data));
     }
@@ -101,11 +106,17 @@ class ProductController extends Controller
 
     public function show($uuid)
     {
+        $status = Status::fromString('productStatus', 'PUBLISHED') ?? 1;
         try {
-            $product = $this->product->with(['images', 'tags', 'likes', 'comments.user'])
+            $product = $this->product->with(['user', 'images', 'tags', 'likes', 'comments.user'])
                 ->where('uuid', $uuid)
                 ->orWhere('id', $uuid)
-                ->firstOrFail();
+                ->where('status', $status)
+                ->first();
+
+            if (!$product) {
+                return Message::warning('Product not found');
+            }
 
             return Message::success('Product detail retrieved successfully', new ProductResource($product));
         } catch (\Throwable $th) {
@@ -119,7 +130,11 @@ class ProductController extends Controller
             $product = $this->product->with(['images', 'tags'])
                 ->where('uuid', $uuid)
                 ->orWhere('id', $uuid)
-                ->firstOrFail();
+                ->first();
+
+            if (!$product) {
+                return Message::warning('Product not found');
+            }
 
             if ($product->user_id !== Auth::user()->id) {
                 return Message::error('Unauthorized access to edit this product');
@@ -154,7 +169,11 @@ class ProductController extends Controller
         try {
             $product = $this->product->where('uuid', $uuid)
                 ->orWhere('id', $uuid)
-                ->firstOrFail();
+                ->first();
+
+            if (!$product) {
+                return Message::warning('Product not found');
+            }
 
             if ($product->user_id !== Auth::user()->id) {
                 return Message::error('Unauthorized access to update this product');
@@ -200,7 +219,11 @@ class ProductController extends Controller
         try {
             $product = $this->product->where('uuid', $uuid)
                 ->orWhere('id', $uuid)
-                ->firstOrFail();
+                ->first();
+
+            if (!$product) {
+                return Message::warning('Product not found');
+            }
 
             if ($product->user_id !== Auth::user()->id) {
                 return Message::error('Unauthorized access to delete this product');

@@ -71,7 +71,7 @@ class LikeAndCommentController extends Controller
 
             return Message::success('Comment created successfully', [
                 'id' => $comment->id,
-                'comment' => $comment->comment,
+                'comment' => $comment->comment_text,
                 'user' => [
                     'id' => $comment->user->id,
                     'name' => $comment->user->name,

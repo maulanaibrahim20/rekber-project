@@ -30,7 +30,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('accept.json')->group(function () {
 
-    Route::get('/product/public', [ProductController::class, 'publicIndex']);
+    Route::get('/product/public', [ProductController::class, 'index']);
     Route::get('/product/{uuid}/public', [ProductController::class, 'show']);
     Route::get('/faq', [FaqCategoryController::class, 'index']);
     Route::get('/faq/{slug}', [FaqCategoryController::class, 'show']);
@@ -42,7 +42,7 @@ Route::middleware('accept.json')->group(function () {
         });
 
         Route::group(['prefix' => 'product', 'controller' => ProductController::class], function () {
-            Route::get('/', [ProductController::class, 'privateIndex']);
+            Route::get('/', [ProductController::class, 'index']);
             Route::post('/store', 'store');
             Route::get('/{uuid}', 'show');
             Route::get('/{uuid}/edit', 'edit');

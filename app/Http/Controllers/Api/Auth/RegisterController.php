@@ -84,9 +84,7 @@ class RegisterController extends Controller
 
         $user->markEmailAsVerified();
 
-        return Message::success('Email berhasil diverifikasi.', [
-            'user' => $user,
-        ]);
+        return redirect(env('FRONTEND_URL'));
     }
 
     public function resendVerificationEmail(Request $request)
