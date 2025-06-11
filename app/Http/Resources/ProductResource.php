@@ -34,7 +34,7 @@ class ProductResource extends JsonResource
             'created_at'  => $this->created_at,
             'updated_at'  => $this->updated_at,
             'images'      => $this->images,
-            'tags'        => $this->tags->pluck('name'),
+            'tags'        => $this->tags,
             'like_count'    => $this->likes_count ?? $this->likes->count(),
             'comment_count' => $this->comments_count ?? $this->comments->count(),
             'is_liked' => $authId ? $this->isLikedByUser($authId) : false,

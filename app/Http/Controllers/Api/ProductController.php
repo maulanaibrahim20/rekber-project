@@ -34,6 +34,7 @@ class ProductController extends Controller
             $status = Status::fromString('productStatus', 'PUBLISHED') ?? 1;
             $query->where('user_id', $request->user_id)
                 ->where('status', $status)
+                ->orderByDesc('priority')
                 ->orderByDesc('created_at');
         } else {
             $query->where('user_id', Auth::id())
