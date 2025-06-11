@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Auth\LoginController as AuthLoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
+use App\Http\Controllers\Api\BankAccountController;
 use App\Http\Controllers\Api\FaqCategoryController;
 use App\Http\Controllers\Api\LikeAndCommentController;
 use App\Http\Controllers\Api\ProductController;
@@ -57,6 +58,9 @@ Route::middleware('accept.json')->group(function () {
                 Route::post('/{uuid}/comments', 'comment');
             });
         });
+
+        Route::get('/getBankList', [BankAccountController::class, 'index']);
+        Route::post('/addBankAccount', [BankAccountController::class, 'store']);
 
         Route::get('/user', [UserController::class, 'index']);
         Route::put('/user/update', [UserController::class, 'update']);
