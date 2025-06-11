@@ -3,6 +3,7 @@
 use App\Http\Controllers\Web\AdministratorController;
 use App\Http\Controllers\Web\Auth\LoginController;
 use App\Http\Controllers\Web\Auth\LogoutController;
+use App\Http\Controllers\Web\BankController;
 use App\Http\Controllers\Web\Config\AssignPermissionController;
 use App\Http\Controllers\Web\Config\PermissionController;
 use App\Http\Controllers\Web\DashboardController;
@@ -83,6 +84,15 @@ Route::prefix('~admin')->group(function () {
             });
 
             Route::get('/log', [LogViewerController::class, 'index'])->name('log');
+        });
+
+        Route::group(['prefix' => 'bank', 'controller' => BankController::class], function () {
+            Route::get('/', 'index')->name('bank');
+            Route::get('/getData', 'getData')->name('bank.getData');
+            Route::post('/update-status', 'updateStatus')->name('bank.updateStatus');
+            Route::get('/create', 'create')->name('bank.create');
+            Route::post('/store', 'store')->name('bank.store');
+            Route::delete('/destroy/{id}', 'destroy')->name('bank.destroy');
         });
 
         Route::group(['prefix' => 'content-management'], function () {

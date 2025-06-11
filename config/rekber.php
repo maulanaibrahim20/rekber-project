@@ -23,4 +23,9 @@ return [
         1 => 'ACTIVE',
         2 => 'INACTIVE',
     ],
+
+    'bankStatus' => [
+        1 => 'ACTIVE',
+        2 => 'INACTIVE',
+    ]
 ];
