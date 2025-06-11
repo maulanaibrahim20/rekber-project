@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ApiRequestResponseLogger;
 use App\Http\Middleware\EnsureAcceptJson;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'accept.json' => EnsureAcceptJson::class
+        ]);
+        $middleware->group('api', [
+            ApiRequestResponseLogger::class,
         ]);
         // $middleware->appendToGroup('api', EnsureAcceptJson::class);
     })

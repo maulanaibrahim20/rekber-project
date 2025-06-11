@@ -8,10 +8,12 @@ use App\Http\Controllers\Web\Config\PermissionController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\FaqCategoryController;
 use App\Http\Controllers\Web\FaqController;
+use App\Http\Controllers\Web\LogApiController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\TagController;
 use App\Http\Controllers\Web\UserController;
 use Illuminate\Support\Facades\Route;
+use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -79,6 +81,8 @@ Route::prefix('~admin')->group(function () {
                 Route::post('/assign', 'assignPermission')->name('assign.assign');
                 Route::post('/revoke', 'revokePermission')->name('assign.revoke');
             });
+
+            Route::get('/log', [LogViewerController::class, 'index'])->name('log');
         });
 
         Route::group(['prefix' => 'content-management'], function () {
