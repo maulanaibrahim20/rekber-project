@@ -3,6 +3,7 @@
 use App\Http\Controllers\Web\AdministratorController;
 use App\Http\Controllers\Web\Auth\LoginController;
 use App\Http\Controllers\Web\Auth\LogoutController;
+use App\Http\Controllers\Web\BankAccountController;
 use App\Http\Controllers\Web\BankController;
 use App\Http\Controllers\Web\Config\AssignPermissionController;
 use App\Http\Controllers\Web\Config\PermissionController;
@@ -93,6 +94,16 @@ Route::prefix('~admin')->group(function () {
             Route::get('/create', 'create')->name('bank.create');
             Route::post('/store', 'store')->name('bank.store');
             Route::delete('/destroy/{id}', 'destroy')->name('bank.destroy');
+
+            Route::group(['prefix' => 'account', 'controller' => BankAccountController::class], function () {
+                Route::get('/', 'index')->name('bank.account');
+                Route::get('/getData', 'getData')->name('bank.account.getData');
+                Route::get('/create', 'create')->name('bank.account.create');
+                Route::post('/store', 'store')->name('bank.account.store');
+                Route::get('/edit/{id}', 'edit')->name('bank.account.edit');
+                Route::put('/update/{id}', 'update')->name('bank.account.update');
+                Route::delete('/destroy/{id}', 'destroy')->name('bank.account.destroy');
+            });
         });
 
         Route::group(['prefix' => 'content-management'], function () {
