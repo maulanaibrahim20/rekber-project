@@ -33,7 +33,8 @@ class ProfileController extends Controller
                         ->orderByDesc('priority')
                         ->orderByDesc('created_at')
                         ->with('images');
-                }
+                },
+                'socialMedia'
             ])->where('username', $username)->firstOrFail();
 
             if (!$user) {
@@ -67,6 +68,7 @@ class ProfileController extends Controller
                 'product_count'  => $products->count(),
                 'products'       => $products,
                 'created_at'     => $user->created_at,
+                'social_media'   => $user->socialMedia
             ]);
         } catch (\Throwable $th) {
             return Message::error('User not found');

@@ -12,7 +12,9 @@ use App\Http\Controllers\Api\LikeAndCommentController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\UserSocialMediaController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Models\UserSocialMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -61,6 +63,11 @@ Route::middleware('accept.json')->group(function () {
                 Route::post('/{uuid}/comments', 'comment');
             });
         });
+
+        Route::get('/social-media', [UserSocialMediaController::class, 'index']);
+        Route::post('/social-media/store', [UserSocialMediaController::class, 'store']);
+        Route::put('/social-media/{id}/update', [UserSocialMediaController::class, 'update']);
+        Route::delete('/social-media/{id}/delete', [UserSocialMediaController::class, 'destroy']);
 
         Route::get('/getBankList', [BankAccountController::class, 'index']);
         Route::post('/addBankAccount', [BankAccountController::class, 'store']);
