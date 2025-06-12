@@ -74,6 +74,7 @@ Route::middleware('accept.json')->group(function () {
 
         Route::get('/user', [UserController::class, 'index']);
         Route::put('/user/update', [UserController::class, 'update']);
+        Route::put('/user/update/password', [UserController::class, 'updatePassword']);
 
 
         Route::post('/logout', [LogoutController::class, 'logout']);

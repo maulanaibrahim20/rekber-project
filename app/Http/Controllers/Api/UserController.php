@@ -39,7 +39,6 @@ class UserController extends Controller
             'username'         => 'nullable|string|max:255|unique:users,username,' . Auth::id(),
             'linkname'         => 'nullable|string|max:255|unique:users,linkname,' . Auth::id(),
             'email'            => 'nullable|string|email|max:255|unique:users,email,' . Auth::id(),
-            'password'         => 'nullable|string|min:8|confirmed',
             'phone'            => 'nullable|string|max:20',
             'birth_date'       => 'nullable|date',
             'address'          => 'nullable|string|max:255',
@@ -52,9 +51,8 @@ class UserController extends Controller
         if ($validator->fails()) {
             return Message::validator($validator->errors()->first(), isList: true);
         }
-        $userId = Auth::id();
 
-        $user = User::find($userId);
+        $user = Auth::user();
 
         try {
             if ($request->hasFile('profile_picture')) {
@@ -66,17 +64,16 @@ class UserController extends Controller
             }
 
             $user->update([
-                'name'           => $request->name ?? $user->name,
-                'username'       => $request->username ?? $user->username,
-                'linkname'       => Str::slug($request->username) ?? $user->linkname,
-                'email'          => $request->email ?? $user->email,
-                'phone'          => $request->phone ?? $user->phone,
-                'birth_date'     => $request->birth_date ?? $user->birth_date,
-                'address'        => $request->address ?? $user->address,
-                'bio'            => $request->bio ?? $user->bio,
-                'gender'         => $request->gender ?? $user->gender,
-                'is_private'     => $request->has('is_private') ? $request->is_private : $user->is_private,
-                'password'       => $request->filled('password') ? Hash::make($request->password) : $user->password,
+                'name'            => $request->name ?? $user->name,
+                'username'        => $request->username ?? $user->username,
+                'linkname'        => Str::slug($request->username) ?? $user->linkname,
+                'email'           => $request->email ?? $user->email,
+                'phone'           => $request->phone ?? $user->phone,
+                'birth_date'      => $request->birth_date ?? $user->birth_date,
+                'address'         => $request->address ?? $user->address,
+                'bio'             => $request->bio ?? $user->bio,
+                'gender'          => $request->gender ?? $user->gender,
+                'is_private'      => $request->has('is_private') ? $request->is_private : $user->is_private,
                 'profile_picture' => $profilePicture ?? $user->profile_picture,
             ]);
 
@@ -84,7 +81,35 @@ class UserController extends Controller
             return Message::success('User updated successfully', new UserResource($user->fresh()));
         } catch (\Throwable $th) {
             DB::rollBack();
-            return Message::error('An error occurred while updating the user: ' . $th->getMessage());
+            return Message::error('An error occurred while updating the user ' . $th->getMessage());
+        }
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password'  => 'required|string',
+            'password'          => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return Message::validator($validator->errors()->first(), isList: true);
+        }
+
+        $user = Auth::user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return Message::error('Password does not match');
+        }
+
+        try {
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
+
+            return Message::success('Password updated successfully');
+        } catch (\Throwable $th) {
+            return Message::error('An error occurred while updating the password ' . $th->getMessage());
         }
     }
 }
