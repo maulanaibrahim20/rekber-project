@@ -66,6 +66,7 @@ class ProfileController extends Controller
                 'profile_picture' => $user->profile_picture,
                 'product_count'  => $products->count(),
                 'products'       => $products,
+                'created_at'     => $user->created_at,
             ]);
         } catch (\Throwable $th) {
             return Message::error('User not found');

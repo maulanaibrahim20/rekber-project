@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\BankAccountController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\FaqCategoryController;
 use App\Http\Controllers\Api\LikeAndCommentController;
 use App\Http\Controllers\Api\ProductController;
@@ -43,6 +44,8 @@ Route::middleware('accept.json')->group(function () {
         });
 
         Route::group(['prefix' => 'product', 'controller' => ProductController::class], function () {
+            Route::get('/comments', [CommentController::class, 'index']);
+
             Route::get('/', [ProductController::class, 'index']);
             Route::post('/store', 'store');
             Route::get('/{uuid}', 'show');
