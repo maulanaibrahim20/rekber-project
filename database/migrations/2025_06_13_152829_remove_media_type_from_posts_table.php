@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->text('reason')->nullable()->after('status')->comment('Reason for product status');
+        Schema::table('posts', function (Blueprint $table) {
+            $table->dropColumn('media_type');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('reason');
+        Schema::table('posts', function (Blueprint $table) {
+            $table->string('media_type')->nullable();
         });
     }
 };

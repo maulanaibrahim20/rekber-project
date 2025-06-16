@@ -19,7 +19,9 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('location')->nullable();
             $table->decimal('price', 10, 2);
+            $table->integer('qty')->default(0)->comment('Stock tersedia');
             $table->tinyInteger('priority')->default(0)->comment('1 = sticky, 0 = normal');
+            $table->text('reason')->nullable()->comment('Reason for product status');
             $table->integer('status')->default(1)->comment('1 = published, 2 = draft, 3 = archived');
             $table->timestamps();
         });

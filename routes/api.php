@@ -8,7 +8,9 @@ use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\BankAccountController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\FaqCategoryController;
+use App\Http\Controllers\Api\FollowerController;
 use App\Http\Controllers\Api\LikeAndCommentController;
+use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
@@ -38,9 +40,9 @@ Route::middleware('accept.json')->group(function () {
     Route::get('/product/{uuid}/public', [ProductController::class, 'show']);
     Route::get('/faq', [FaqCategoryController::class, 'index']);
     Route::get('/faq/{slug}', [FaqCategoryController::class, 'show']);
-    Route::get('/profile/{username}', [ProfileController::class, 'index']);
 
     Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/profile/{username}', [ProfileController::class, 'index']);
         Route::prefix('auth')->group(function () {
             Route::get('check', [AuthLoginController::class, 'checkAuth']);
         });
@@ -64,17 +66,37 @@ Route::middleware('accept.json')->group(function () {
             });
         });
 
+        Route::group(['prefix' => 'post', 'controller' => PostController::class], function () {
+            Route::get('/comments', [CommentController::class, 'indexPostComment']);
+
+            Route::get('/', 'index');
+            Route::post('/store', 'store');
+            Route::get('/{uuid}/show', 'show');
+            Route::put('/{uuid}/update', 'update');
+            Route::delete('/{uuid}/delete', 'destroy');
+            Route::delete('/{id}/delete/image', 'destroyMedia');
+
+            Route::group(['controller' => LikeAndCommentController::class], function () {
+                Route::post('/{uuid}/like', 'toggleLike');
+                Route::post('/{uuid}/comments', 'comment');
+            });
+        });
+
         Route::get('/social-media', [UserSocialMediaController::class, 'index']);
         Route::post('/social-media/store', [UserSocialMediaController::class, 'store']);
-        Route::put('/social-media/{id}/update', [UserSocialMediaController::class, 'update']);
         Route::delete('/social-media/{id}/delete', [UserSocialMediaController::class, 'destroy']);
 
         Route::get('/getBankList', [BankAccountController::class, 'index']);
         Route::post('/addBankAccount', [BankAccountController::class, 'store']);
 
+        Route::post('/follow/{uuidOrUsername}', [FollowerController::class, 'toggleFollow']);
+        Route::get('/user/{uuidOrUsername}/followers', [FollowerController::class, 'followers']);
+        Route::get('/user/{uuidOrUsername}/following', [FollowerController::class, 'following']);
+
         Route::get('/user', [UserController::class, 'index']);
         Route::put('/user/update', [UserController::class, 'update']);
         Route::put('/user/update/password', [UserController::class, 'updatePassword']);
+        Route::get('/user/get-list', [UserController::class, 'getList']);
 
 
         Route::post('/logout', [LogoutController::class, 'logout']);

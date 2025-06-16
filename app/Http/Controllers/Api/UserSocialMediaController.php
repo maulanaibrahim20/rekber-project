@@ -36,7 +36,7 @@ class UserSocialMediaController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return Message::validator('Validation failed', $validator->errors());
+            return Message::validator($validator->errors()->first(), isList: true);
         }
 
         try {
@@ -54,39 +54,6 @@ class UserSocialMediaController extends Controller
             return Message::error('Error storing data social media' . $th->getMessage());
         }
     }
-
-    public function update(Request $request, $id)
-    {
-        DB::beginTransaction();
-
-        $validator = Validator::make($request->all(), [
-            'link'      => 'required|string',
-            'type'      => 'required|string',
-            'path'      => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return Message::validator('Validation failed', $validator->errors());
-        }
-        $data = $this->userSocialMedia->where('id', $id)->first();
-
-        try {
-            $data->update([
-                'user_id'   => Auth::user()->id,
-                'link'      => $request->link,
-                'type'      => $request->type,
-                'path'      => $request->path,
-            ]);
-
-            DB::commit();
-            return Message::success('Success updating data social media', $data);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return Message::error('Error updating data social media' . $th->getMessage());
-        }
-    }
-
-
     public function destroy($id)
     {
         DB::beginTransaction();

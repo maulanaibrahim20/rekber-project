@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->boolean('can_disburse')->default(false);
             $table->boolean('can_name_validate')->default(false);
-            $table->boolean('is_deleted')->default(false);
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

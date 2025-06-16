@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
+    protected $user;
+
+    public function __construct()
+    {
+        $this->user = new User();
+    }
     public function index(Request $request, $username)
     {
         try {
@@ -26,7 +32,7 @@ class ProfileController extends Controller
             $statusString = $request->query('status', 'published');
             $statusCode = $statusMap[strtolower($statusString)] ?? 1;
 
-            $user = User::with([
+            $user = $this->user->with([
                 'products' => function ($q) use ($statusCode) {
                     $q->where('status', $statusCode)
                         ->withCount(['likes', 'comments'])
@@ -34,8 +40,10 @@ class ProfileController extends Controller
                         ->orderByDesc('created_at')
                         ->with('images');
                 },
-                'socialMedia'
-            ])->where('username', $username)->firstOrFail();
+                'socialMedia',
+            ])->withCount(['following', 'followers'])
+                ->where('username', $username)
+                ->firstOrFail();
 
             if (!$user) {
                 return Message::error('User not found');
@@ -59,22 +67,25 @@ class ProfileController extends Controller
             });
 
             return Message::success('User profile loaded', [
-                'id'             => $user->id,
-                'uuid'           => $user->uuid,
-                'name'           => $user->name,
-                'username'       => $user->username,
-                'bio'            => $user->bio,
-                'profile_picture' => $user->profile_picture,
-                'product_count'  => $products->count(),
-                'products'       => $products,
-                'created_at'     => $user->created_at,
-                'social_media'   => $user->socialMedia
+                'id'                => $user->id,
+                'uuid'              => $user->uuid,
+                'name'              => $user->name,
+                'username'          => $user->username,
+                'bio'               => $user->bio,
+                'is_private'        => $user->is_private,
+                'profile_picture'   => $user->profile_picture,
+                'product_count'     => $products->count(),
+                'follower_count'    => $user->followers_count,
+                'following_count'   => $user->following_count,
+                'is_following'      => Auth::check() ? Auth::user()->isFollowing($user->id) : false,
+                'products'          => $products,
+                'created_at'        => $user->created_at,
+                'social_media'      => $user->socialMedia
             ]);
         } catch (\Throwable $th) {
             return Message::error('User not found');
         }
     }
-
 
     public function pin($uuid)
     {

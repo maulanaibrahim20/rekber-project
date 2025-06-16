@@ -95,6 +95,9 @@ class LoginController extends Controller
                 return Message::unauhtorize();
             }
 
+            $user->follower = $user->followers()->count();
+            $user->following = $user->following()->count();
+
             return Message::success('Token is valid', [
                 'user' => $user,
             ]);

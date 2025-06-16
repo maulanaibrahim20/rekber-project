@@ -27,5 +27,18 @@ return [
     'bankStatus' => [
         1 => 'ACTIVE',
         2 => 'INACTIVE',
+    ],
+
+    'followerStatus' => [
+        1 => 'ACCEPTED',
+        2 => 'PENDING',
+        3 => 'REJECTED',
+    ],
+
+    'postStatus' => [
+        1 => 'PUBLISHED',
+        2 => 'DRAFT',
+        3 => 'ARCHIVED',
+        4 => 'BLOCKED',
     ]
 ];

@@ -36,7 +36,14 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name'             => 'nullable|string|max:255',
-            'username'         => 'nullable|string|max:255|unique:users,username,' . Auth::id(),
+            'username'         => [
+                'nullable',
+                'string',
+                'min:3',
+                'max:30',
+                'unique:users,username',
+                'regex:/^(?!.*\.\.)(?!.*\.$)(?!^\.)[a-zA-Z0-9._]+$/',
+            ],
             'linkname'         => 'nullable|string|max:255|unique:users,linkname,' . Auth::id(),
             'email'            => 'nullable|string|email|max:255|unique:users,email,' . Auth::id(),
             'phone'            => 'nullable|string|max:20',
@@ -111,5 +118,40 @@ class UserController extends Controller
         } catch (\Throwable $th) {
             return Message::error('An error occurred while updating the password ' . $th->getMessage());
         }
+    }
+
+    public function getList(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'per_page'          => 'nullable|numeric',
+            'search'            => 'nullable|string',
+            'most_followers'    => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return Message::validator($validator->errors()->first(), isList: true);
+        }
+
+        $query = $this->user->query()
+            ->withCount('followers');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('username', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($request->boolean('most_followers')) {
+            $query->orderByDesc('followers_count');
+        } else {
+            $query->orderBy('id', 'asc');
+        }
+
+        $perPage = $request->input('per_page', 10);
+        $users = $query->paginate($perPage);
+
+        return Message::paginate('Users retrieved successfully', UserResource::collection($users));
     }
 }

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('question');
             $table->text('answer');
             $table->foreignId('category_id')->nullable()->constrained('faq_categories')->onDelete('set null');
+            $table->integer('status')->default(1);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\FaqCategoryController;
 use App\Http\Controllers\Web\FaqController;
 use App\Http\Controllers\Web\LogApiController;
+use App\Http\Controllers\Web\PostController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\TagController;
 use App\Http\Controllers\Web\UserController;
@@ -105,6 +106,12 @@ Route::prefix('~admin')->group(function () {
                 Route::delete('/destroy/{id}', 'destroy')->name('bank.account.destroy');
             });
         });
+
+        Route::get('/post', [PostController::class, 'index'])->name('post');
+        Route::get('/post/getData', [PostController::class, 'getData'])->name('post.getData');
+        Route::get('/post/show/{uuid}', [PostController::class, 'show'])->name('post.show');
+        Route::get('/post/showModal/{id}', [PostController::class, 'showModal'])->name('post.showModal');
+        Route::put('/post/updateStatus/{uuid}', [PostController::class, 'updateStatus'])->name('post.updateStatus');
 
         Route::group(['prefix' => 'content-management'], function () {
             Route::group(['prefix' => 'faq-category', 'controller' => FaqCategoryController::class], function () {

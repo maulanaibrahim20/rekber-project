@@ -5,13 +5,10 @@
             style="background: linear-gradient(135deg, #00d4aa 0%, #4c63d2 100%);">
 
             <div class="mb-4">
-                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" stroke="white"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-                </svg>
+                <img src="{{ url('/admin') }}/logo/slogo.png" style="height: auto; width: 200px;" alt="">
             </div>
 
-            <h1 class="h2 mb-4 text-center fw-bold">TrustPay</h1>
+            <h1 class="h2 mb-4 text-center fw-bold">{{ config('app.name', 'SosApp') }}</h1>
 
             <p class="text-center mb-5 px-4" style="font-size: 1.1rem; opacity: 0.9;">
                 The secure way to conduct transactions with<br>
@@ -58,13 +55,9 @@
         <div class="container container-tight my-5 px-lg-5">
             <div class="text-center mb-4">
                 <a href="." class="navbar-brand navbar-brand-autodark">
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            fill="none" />
-                    </svg>
+                    <img src="{{ url('/admin') }}/logo/slogo.png" style="height: auto; width: 200px;" alt="">
                 </a>
-                <h1 class="h2 mb-4 text-center fw-bold">TrustPay</h1>
+                <h1 class="h2 mb-4 text-center fw-bold">{{ config('app.name', 'SosApp') }}</h1>
 
             </div>
             <h2 class="h3 text-center mb-3">

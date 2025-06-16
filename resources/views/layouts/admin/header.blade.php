@@ -5,7 +5,8 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-            {{config('app.name')}}
+            <img src="{{ url('/admin') }}/logo/slogo.png" style="height: auto; width: 50px;"
+                alt="">{{config('app.name')}}
         </h1>
         <div class="navbar-nav flex-row order-md-last">
             <div class="d-none d-md-flex">

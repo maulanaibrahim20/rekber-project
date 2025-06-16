@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->integer('qty')->default(0)->after('price')->comment('Stock tersedia');
+        Schema::table('posts', function (Blueprint $table) {
+            $table->uuid('uuid')->unique()->after('id')->nullable();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('qty');
+        Schema::table('posts', function (Blueprint $table) {
+            //
         });
     }
 };
